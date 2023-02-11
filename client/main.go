@@ -33,6 +33,8 @@ func main() {
 
 		fmt.Print("Enter the first number: ")
 		scanner.Scan()
+		// This will be work with negative numbers
+
 		a, err := strconv.ParseFloat(strings.TrimSpace(scanner.Text()), 64)
 		if err != nil {
 			fmt.Println("Error parsing the first number", err)

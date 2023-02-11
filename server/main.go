@@ -14,15 +14,30 @@ type Args struct {
 	A, B float64
 }
 
-// Sum method
-func (c *Calculator) Sum(args *Args, reply *float64) error {
+// Add method
+func (c *Calculator) Add(args *Args, reply *float64) error {
 	*reply = args.A + args.B
 	return nil
 }
 
 // Subtract method
 func (c *Calculator) Subtract(args *Args, reply *float64) error {
-	*reply = args.A * args.B
+	// Thiw will be work with negative numbers
+	if args.A < 0 && args.B < 0 {
+		args.A, args.B = -args.A, -args.B
+		*reply = -(args.A - args.B)
+		return nil
+	}
+	if args.A < 0 {
+		args.A, args.B = -args.A, -args.B
+		*reply = -(args.A + args.B)
+		return nil
+	}
+	if args.B < 0 {
+		*reply = args.A + -args.B
+		return nil
+	}
+	*reply = args.A - args.B
 	return nil
 }
 
