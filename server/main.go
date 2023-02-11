@@ -22,7 +22,7 @@ func (c *Calculator) Add(args *Args, reply *float64) error {
 
 // Subtract method
 func (c *Calculator) Subtract(args *Args, reply *float64) error {
-	// Thiw will be work with negative numbers
+	// This will be work with negative numbers
 	if args.A < 0 && args.B < 0 {
 		args.A, args.B = -args.A, -args.B
 		*reply = -(args.A - args.B)
