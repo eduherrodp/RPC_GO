@@ -9,8 +9,8 @@ import (
 	"strings"
 )
 
-type Argumentos struct {
-	A, B int
+type Args struct {
+	A, B float64
 }
 
 func main() {
@@ -22,38 +22,53 @@ func main() {
 	}
 
 	for {
-		fmt.Print("Seleccione una operación (+, -, *, /): ")
+		fmt.Print("Select an operation (+, -, *, /): ")
 		scanner.Scan()
-		operacion := scanner.Text()
+		operation := scanner.Text()
 
-		fmt.Print("Ingrese el primer número: ")
+		if operation != "+" && operation != "-" && operation != "*" && operation != "/" {
+			fmt.Println("Invalid operation")
+			continue
+		}
+
+		fmt.Print("Enter the first number: ")
 		scanner.Scan()
-		a, _ := strconv.Atoi(strings.TrimSpace(scanner.Text()))
+		// This will be work with negative numbers
 
-		fmt.Print("Ingrese el segundo número: ")
+		a, err := strconv.ParseFloat(strings.TrimSpace(scanner.Text()), 64)
+		if err != nil {
+			fmt.Println("Error parsing the first number", err)
+			continue
+		}
+
+		fmt.Print("Enter the second number: ")
 		scanner.Scan()
-		b, _ := strconv.Atoi(strings.TrimSpace(scanner.Text()))
+		b, err := strconv.ParseFloat(strings.TrimSpace(scanner.Text()), 64)
+		if err != nil {
+			fmt.Println("Error parsing the second number", err)
+			continue
+		}
 
-		var result int
-		var args = Argumentos{a, b}
+		var result float64
+		var args = Args{a, b}
 
-		switch operacion {
+		switch operation {
 		case "+":
-			err = client.Call("Calculadora.Sumar", args, &result)
+			err = client.Call("Calculator.Add", args, &result)
 		case "-":
-			err = client.Call("Calculadora.Restar", args, &result)
+			err = client.Call("Calculator.Subtract", args, &result)
 		case "*":
-			err = client.Call("Calculadora.Multiplicar", args, &result)
+			err = client.Call("Calculator.Multiply", args, &result)
 		case "/":
-			err = client.Call("Calculadora.Dividir", args, &result)
+			err = client.Call("Calculator.Divide", args, &result)
 		default:
-			fmt.Println("Operación inválida")
+			fmt.Println("Invalid operation")
 			continue
 		}
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("Error performing operation:", err)
 			continue
 		}
-		fmt.Printf("Resultado: %d\n\n", result)
+		fmt.Printf("Result: %.2f\n\n", result)
 	}
 }

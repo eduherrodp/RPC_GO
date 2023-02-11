@@ -7,51 +7,70 @@ import (
 	"net/rpc"
 )
 
-// Calculadora es la estructura que implementa el servicio
-type Calculadora int
+// Calculator is the structure that implements the service
+type Calculator float64
 
-// Argumentos es la estructura que contiene los argumentos de la operación
-type Argumentos struct {
-	A, B int
+type Args struct {
+	A, B float64
 }
 
-// Sumar
-func (c *Calculadora) Sumar(args *Argumentos, reply *int) error {
+// Add method
+func (c *Calculator) Add(args *Args, reply *float64) error {
 	*reply = args.A + args.B
 	return nil
 }
 
-// Restar
-func (c *Calculadora) Restar(args *Argumentos, reply *int) error {
+// Subtract method
+func (c *Calculator) Subtract(args *Args, reply *float64) error {
+	// Thiw will be work with negative numbers
+	if args.A < 0 && args.B < 0 {
+		args.A, args.B = -args.A, -args.B
+		*reply = -(args.A - args.B)
+		return nil
+	}
+	if args.A < 0 {
+		args.A, args.B = -args.A, -args.B
+		*reply = -(args.A + args.B)
+		return nil
+	}
+	if args.B < 0 {
+		*reply = args.A + -args.B
+		return nil
+	}
 	*reply = args.A - args.B
 	return nil
 }
 
-// Multiplicar
-func (c *Calculadora) Multiplicar(args *Argumentos, reply *int) error {
+// Multiply method
+func (c *Calculator) Multiply(args *Args, reply *float64) error {
 	*reply = args.A * args.B
 	return nil
 }
 
-// Dividir
-func (c *Calculadora) Dividir(args *Argumentos, reply *int) error {
+// Divide method
+func (c *Calculator) Divide(args *Args, reply *float64) error {
 	if args.B == 0 {
-		return errors.New("División por cero")
+		return errors.New("division by zero")
 	}
 	*reply = args.A / args.B
 	return nil
 }
+
 func main() {
-	calculadora := new(Calculadora)
-	rpc.Register(calculadora)
+	calculator := new(Calculator)
+	err := rpc.Register(calculator)
+	if err != nil {
+		return
+	}
 	ln, err := net.Listen("tcp", ":8080")
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 		return
 	}
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
+			fmt.Println(err)
 			continue
 		}
 		go rpc.ServeConn(conn)
